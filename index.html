@@ -2,16 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Weather App</title>
-    <link rel="stylesheet" href="G:\Weather\style.css">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Weather Forecast App</title>
 </head>
 <body>
-    <div id="weather-container">
-        <h2>Weather App</h2>
-        <input type="text" id="city" placeholder="Enter city">
-        <button onclick="getWeater()">Search</button> 
+    <div class="wrapper">
+        <div class="sidebar">
+            <div>
+                <form action="" class="search" id="search">
+                    <input type="text" id="query" placeholder="search...">
+                    <button></button>
+                </form>
+            </div>
+        </div>
     </div>
-    <script src="G:\Weather\script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

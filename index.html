@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawsome.com/64d58efce2.js"
+    crossorigin="anonymous"></script>
     <title>Weather Forecast App</title>
 </head>
 <body>
@@ -12,8 +14,20 @@
             <div>
                 <form action="" class="search" id="search">
                     <input type="text" id="query" placeholder="search...">
-                    <button></button>
+                    <button><img src="./Images/search-symbol.png"/></button>
                 </form>
+                <div class="Weather-icon">
+                    <img src="./Images/weather-icon.png" alt="icon" id="icon"/>
+                </div>
+                <div class="temprature">
+                    <h1 id="temp">0</h1>
+                    <span class="temp-unit">&deg;C</span>
+                </div>
+                <div class="date-time">
+                    <p id="date-time">
+                        Monday, 10.00
+                    </p>
+                </div>
             </div>
         </div>
     </div>

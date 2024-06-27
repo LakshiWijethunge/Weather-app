@@ -81,3 +81,88 @@ img{
  button>img{
     width: 35px;
  }
+
+ .Weather-icon{
+    width: 100%;
+    height: 15px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 100px;
+ }
+
+ .Weather-icon>img{
+    width: 50%;
+    object-fit: cover;
+
+ }
+ .temprature{
+    display: flex;
+ }
+ .temprature #temp{
+    font-size: 70px;
+    font-weight: 100;
+    line-height: 1;
+ }
+ .temprature span{
+    font-size: 40px;
+    margin-top: -10px;
+    display: block;
+ }
+ .divider{
+    width: 100%;
+    height: 1px;
+    margin: 20px 0;
+    background-color: #000;
+ }
+ .consition-rain{
+    font-size: 12px;
+    text-transform: capitalize;
+    
+ }
+ .condition-rain>img{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+ }
+ .main{
+    width: 100%;
+    min-width: 400px;
+    padding: 20px 40px;
+    position: relative;
+    padding-bottom: 90px;
+    background-color: #fff;
+ }
+ .main nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+ }
+nav.option{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.option button{
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    text-transform: capitalize;
+}
+.option button.active{
+    color: var(--primary-clr);
+}
+.nav.units button{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #1a1a1a;
+    background-color: #fff;
+}
+.units button.active{
+    color: #fff;
+    background-color: #1a1a1a;
+}

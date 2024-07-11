@@ -35,3 +35,25 @@ function getDateTime() {
 }
 
 date.innerText = getDateTime();
+
+//Update time every second
+setInterval(() => {
+    date.innerText = getDateTime();
+},1000);
+
+//function to get public ip with fetch
+function getPublicIp() {
+    fetch ("https://geolocation-db.com/json/",{
+        method: "GET",
+    })
+    .then((Response) => Response.json())
+    .then((date) => {
+        console.log(data);
+        currentCity = data.currentCity;
+    });
+}
+getPublicIp();
+
+//function to get weather data
+
+function getWeatherData()

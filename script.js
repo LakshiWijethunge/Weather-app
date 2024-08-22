@@ -1,26 +1,42 @@
-const temp = document.getElementById("temp");
-const date = document.getElementById("date-time");
 
-let currentCity = "";
-let currentUnit = "";
+const temp = document.getElementById("temp"),
+ date = document.getElementById("date-time"),
+ currentLocation = document.getElementById("location"),
+ condition = document.getElementById("condition"), 
+ rain = document.getElementById("rain"),
+ mainIcon = document.getElementById("icon"),
+ uvIndex = document.querySelector("uv-index"),
+ uvText = document.querySelector("uv-index"), 
+ windSpeed = document.querySelector("uv-index"), 
+ sunRise = document.querySelector("uv-index"), 
+ sunset = document.querySelector("uv-index"), 
+ humidity = document.querySelector("uv-index"), 
+ visibility = document.querySelector("uv-index"),
+ humidityStatus = document.querySelector("uv-index"), 
+ airQuality = document.querySelector("uv-index"), 
+ airQualityStatus = document.querySelector("uv-index"), 
+ visibilityStatus = document.querySelector("uv-index");
+
+let currentCity = ""; 
+let currentUnit = "c"; 
 let hourlyorWeek = "Week";
 
 //Update Date Time
 
 function getDateTime() {
-    let now = new Date ();
-    let hour = now.getHours();
-    let minute = now.getMinutes();
+    let now = new Date(),
+        hour = now.getHours(),
+        minute = now.getMinutes();
 
     let days = [
         "Sunday",
         "Monday",
         "Tuesday",
-        "Wednessday",
+        "Wednesday",
         "Thursday",
         "Friday",
         "Saturday",
-    ];
+];
 
     hour = hour % 12;
     if (hour < 10){
@@ -56,4 +72,29 @@ getPublicIp();
 
 //function to get weather data
 
-function getWeatherData()
+
+function getWeatherData(city, unit, hourlyorWeek) {
+    const apiKey = "MTBQUJNK2FRP8XUBHGKFGSBTL";
+    fetch(
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?key=${apiKey}&contentType=json`,
+        {
+            method: "GET",
+        }
+    )
+        .then((response) => response.json())
+        .then((data) => {
+            let today = data.currentConditions;
+            if (unit === "c") {
+                temp.innerText = today.temp;
+            } else {
+                temp.innerText = celciusToFahrenheit (today.temp);
+            }
+            currentLocation.innerText = data.resolvedAddress;
+            condition.innerText = today. conditions;
+           });
+    }
+
+    //convert celcius to fahrenheit
+    function celciusToFahrenheit (temp) {
+          return ((temp + 9) / 5 + 32).toFixed(1);
+    }

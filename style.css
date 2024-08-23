@@ -229,7 +229,7 @@ nav .units button{
     flex-direction: column;
 }
 .card2 .card-heading{
-    color: white;
+    color: rgb(3, 3, 3);
 }
 .card2 .content{
     margin-top: 20px;

@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         airQuality = document.querySelector(".air-quality"),
         airQualityStatus = document.querySelector(".air-quality-status"),
         visibilityStatus = document.querySelector(".visibility-status");
+        weatherCards = document.querySelector("#weather-cards")
 
     let currentCity = "";
     let currentUnit = "c";
@@ -28,9 +29,12 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
+                console.log("IP Data:", data);
                 currentCity = data.city;
                 getWeatherData(currentCity, currentUnit, hourlyorWeek);
+            })
+            .catch((error) => {
+                console.error("Error fetching IP data:", error);
             });
     }
     getPublicIp();
@@ -46,11 +50,17 @@ document.addEventListener("DOMContentLoaded", function () {
         )
             .then((response) => response.json())
             .then((data) => {
+                console.log("Weather Data:", data); // Log entire weather data
                 let today = data.currentConditions;
+                
+                // Log current conditions
+                console.log("Current Conditions:", today);
+
+                // Update DOM elements
                 if (unit === "f") {
-                    temp.innerText = today.temp;
+                    temp.innerText = today.temp + " °F";
                 } else {
-                    temp.innerText = fahrenheitToCelsius(today.temp);
+                    temp.innerText = fahrenheitToCelsius(today.temp) + " °C";
                 }
                 currentLocation.innerText = data.resolvedAddress;
                 condition.innerText = today.conditions;
@@ -66,10 +76,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateAirQualityStatus(today.winddir);
                 sunRise.innerText = convertTimeTo12HourFormat(today.sunrise);
                 sunSet.innerText = convertTimeTo12HourFormat(today.sunset);
-            })
-            .catch((error) => {
-                console.error("Error fetching weather data:", error);
-            });
+                mainIcon.src = getIcon(today.icon);
+                
+                if (hourlyorWeek === "hourly") {
+                    updateForecast(data.days[0].hours, unit, "day");
+                }else{
+                    updateForecast(data.days, unit, "week");
+                } 
+        })
     }
 
     // Convert Fahrenheit to Celsius
@@ -141,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     
-    
+    // Function to convert time to 12-hour format
     function convertTimeTo12HourFormat(time) {
         let [hour, minute] = time.split(":");
         let ampm = hour >= 12 ? "pm" : "am";
@@ -150,5 +164,22 @@ document.addEventListener("DOMContentLoaded", function () {
         let strTime = hour + ":" + minute + " " + ampm;
         return strTime;
     }
-    
+
+    // Function to get icon URL based on weather condition
+    function getIcon(condition) {
+        switch (condition) {
+            case "Partly-cloudy-day":
+                return "./Images/moon-cloud.png";
+            case "partly-cloudy-night":
+                return "./Images/cloudy-night.png";
+            case "rain":
+                return "./Images/rain.png";
+            case "clear-day":
+                return "./Images/day.png";
+            case "clear-night":
+                return "./Images/moon-and-star.png";
+            default:
+                return "./Images/moon-cloud.png";
+        }
+    }
 });

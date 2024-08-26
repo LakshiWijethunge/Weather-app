@@ -15,12 +15,13 @@ document.addEventListener("DOMContentLoaded", function () {
         humidityStatus = document.querySelector(".humidity-status"),
         airQuality = document.querySelector(".air-quality"),
         airQualityStatus = document.querySelector(".air-quality-status"),
-        visibilityStatus = document.querySelector(".visibility-status");
-        weatherCards = document.querySelector("#weather-cards")
+        visibilityStatus = document.querySelector(".visibility-status"),
+        weatherCards = document.querySelector("#weather-cards");
+        
 
     let currentCity = "";
     let currentUnit = "c";
-    let hourlyorWeek = "Week";
+    let hourlyOrWeek = "Week";
 
     // Function to get public IP with fetch
     function getPublicIp() {
@@ -31,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 console.log("IP Data:", data);
                 currentCity = data.city;
-                getWeatherData(currentCity, currentUnit, hourlyorWeek);
+                getWeatherData(currentCity, currentUnit, hourlyOrWeek);
             })
             .catch((error) => {
                 console.error("Error fetching IP data:", error);
@@ -40,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
     getPublicIp();
 
     // Function to get weather data
-    function getWeatherData(city, unit, hourlyorWeek) {
+    function getWeatherData(city, unit, hourlyOrWeek) {
         const apiKey = "MTBQUJNK2FRP8XUBHGKFGSBTL";
         fetch(
             `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?key=${apiKey}&contentType=json`,
@@ -78,12 +79,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 sunSet.innerText = convertTimeTo12HourFormat(today.sunset);
                 mainIcon.src = getIcon(today.icon);
                 
-                if (hourlyorWeek === "hourly") {
+                if (hourlyOrWeek === "hourly") {
                     updateForecast(data.days[0].hours, unit, "day");
-                }else{
+                } else {
                     updateForecast(data.days, unit, "week");
                 } 
-        })
+            });
     }
 
     // Convert Fahrenheit to Celsius
@@ -121,17 +122,17 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateVisibilityStatus(visibility) {
         if (visibility <= 0.3) {
             visibilityStatus.innerText = "Dense Fog";
-        } else if (visibility <= 0.16) {
+        } else if (visibility <= 1.6) { // Fixed the value from 0.16 to 1.6
             visibilityStatus.innerText = "Moderate Fog";
-        } else if (visibility <= 0.35) {
+        } else if (visibility <= 3.5) { // Fixed the value from 0.35 to 3.5
             visibilityStatus.innerText = "Light Fog"; 
-        } else if (visibility <= 1.13) { 
+        } else if (visibility <= 11.3) { // Fixed the value from 1.13 to 11.3
             visibilityStatus.innerText = "Very Light Fog";
-        } else if (visibility <= 2.16) { 
+        } else if (visibility <= 21.6) { // Fixed the value from 2.16 to 21.6
             visibilityStatus.innerText = "Light Mist";
-        } else if (visibility <= 5.4) {
+        } else if (visibility <= 54) { // Fixed the value from 5.4 to 54
             visibilityStatus.innerText = "Very Light Mist";
-        } else if (visibility <= 10.8) {
+        } else if (visibility <= 108) { // Fixed the value from 10.8 to 108
             visibilityStatus.innerText = "Clear Air";
         } else {
             visibilityStatus.innerText = "Very Clear Air";
@@ -158,9 +159,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to convert time to 12-hour format
     function convertTimeTo12HourFormat(time) {
         let [hour, minute] = time.split(":");
-        let ampm = hour >= 12 ? "pm" : "am";
+        let ampm = hour >= 12 ? "PM" : "AM"; // Fixed the case for AM/PM
         hour = hour % 12 || 12; // Convert hour to 12-hour format; 0 hour becomes 12
-        hour = hour < 10 ? "0" + hour : hour; // Add prefix zero if less than 10
         let strTime = hour + ":" + minute + " " + ampm;
         return strTime;
     }
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to get icon URL based on weather condition
     function getIcon(condition) {
         switch (condition) {
-            case "Partly-cloudy-day":
+            case "partly-cloudy-day":
                 return "./Images/moon-cloud.png";
             case "partly-cloudy-night":
                 return "./Images/cloudy-night.png";
@@ -182,4 +182,95 @@ document.addEventListener("DOMContentLoaded", function () {
                 return "./Images/moon-cloud.png";
         }
     }
+
+    function getDayName(date) {
+        let day = new Date(date);
+        let days = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+        ];
+        return days[day.getDay()];
+    }
+
+    function getHour(time) {
+        let [hour, min] = time.split(":");
+        let ampm = hour >= 12 ? "PM" : "AM";
+        hour = hour % 12 || 12;
+        return `${hour}:${min} ${ampm}`;
+    }
+
+    function updateForecast(data, unit, type) { 
+        weatherCards.innerHTML = "";
+
+        let day = 0;
+        let numCards = type === "day" ? 24 : 7;
+
+        for (let i = 0; i < numCards; i++) {
+            let card = document.createElement("div");
+            card.classList.add("card");
+
+            let dayName = type === "week" ? getDayName(data[day].datetime) : getHour(data[day].datetime);
+            let dayTemp = unit === "c" ? fahrenheitToCelsius(data[day].temp) : data[day].temp;
+            let iconCondition = data[day].icon;
+            let iconSrc = getIcon(iconCondition);
+            let tempUnit = unit === "c" ? "°C" : "°F";
+
+            card.innerHTML = `
+                <div class="card">
+                    <h2 class="day-name">${dayName}</h2>
+                    <div class="card-icon">
+                        <img src="${iconSrc}" alt="weather icon"/>
+                    </div>
+                    <div class="day-temp">
+                        <h2 class="temp">${dayTemp}${tempUnit}</h2>
+                    </div>
+                </div>
+            `;
+            weatherCards.appendChild(card);
+            day++;
+        }
+    }
+
+    // document.querySelectorAll(".celcius").forEach((elem) => {
+    //     elem.addEventListener("click", function () {
+    //         changeUnit("c");
+    //     });
+    // });
+
+    // document.querySelectorAll(".fahrenheit").forEach((elem) => {
+    //     elem.addEventListener("click", function () {
+    //         changeUnit("f");
+    //     });
+    // });
+
+    // function changeUnit(unit) {
+    //     if (currentUnit !== unit) {
+    //         currentUnit = unit;
+    //         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    //     }
+    // }
+
+    // document.querySelectorAll(".hourly").forEach((elem) => {
+    //     elem.addEventListener("click", function () {
+    //         changeTimeSpan("hourly");
+    //     });
+    // });
+
+    // document.querySelectorAll(".weekly").forEach((elem) => {
+    //     elem.addEventListener("click", function () {
+    //         changeTimeSpan("week");
+    //     });
+    // });
+
+    // function changeTimeSpan(span) {
+    //     if (hourlyOrWeek !== span) {
+    //         hourlyOrWeek = span;
+    //         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    //     }
+    // }
 });

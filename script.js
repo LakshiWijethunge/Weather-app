@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
     const temp = document.getElementById("temp"),
         date = document.getElementById("date-time"),
-        currentLocation = document.querySelector(".location"), 
+        currentLocation = document.querySelector(".location"),
         condition = document.getElementById("condition"),
-        rain = document.getElementById("rain-perc"), 
+        rain = document.getElementById("rain-perc"),
         mainIcon = document.getElementById("icon"),
         uvIndex = document.querySelector(".uv-index"),
         uvText = document.querySelector(".uv-text"),
@@ -17,9 +17,9 @@ document.addEventListener("DOMContentLoaded", function () {
         airQualityStatus = document.querySelector(".air-quality-status"),
         visibilityStatus = document.querySelector(".visibility-status"),
         weatherCards = document.querySelector("#weather-cards"),
-        celciusBtn = document.querySelector(".celcius"), 
-        fahrenheitBtn = document.querySelector(".fahrenheit"), 
-        hourlyBtn = document.querySelector(".hourly"), 
+        celciusBtn = document.querySelector(".celcius"),
+        fahrenheitBtn = document.querySelector(".fahrenheit"),
+        hourlyBtn = document.querySelector(".hourly"),
         weekBtn = document.querySelector(".week"),
         tempUnit = document.querySelectorAll(".temp-unit");
 
@@ -42,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
             "Friday",
             "Saturday",
         ];
-        // 12 hours format
         hour = hour % 12 || 12;
         if (minute < 10) {
             minute = "0" + minute;
@@ -86,11 +85,13 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((response) => response.json())
             .then((data) => {
                 let today = data.currentConditions;
-                if (unit === "c") {
-                    temp.innerText = today.temp;
-                } else {
-                    temp.innerText = celciusToFahrenheit(today.temp);
-                }
+                console.log("Raw Temp Data (Fahrenheit):", today.temp); // Debugging statement
+
+                let tempValue = unit === "c" ? fahrenheitToCelsius(today.temp).toFixed(2) : today.temp.toFixed(2);
+                temp.innerText = tempValue;
+
+                console.log("Displayed Temp:", temp.innerText); // Debugging statement
+
                 currentLocation.innerText = data.resolvedAddress;
                 condition.innerText = today.conditions;
                 rain.innerText = "Perc - " + today.precip + "%";
@@ -127,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let card = document.createElement("div");
             card.classList.add("card");
             let dayName = type === "week" ? getDayName(data[day].datetime) : getHour(data[day].datetime);
-            let dayTemp = unit === "f" ? celciusToFahrenheit(data[day].temp) : data[day].temp;
+            let dayTemp = unit === "f" ? data[day].temp.toFixed(2) : fahrenheitToCelsius(data[day].temp).toFixed(2);
             let iconSrc = getIcon(data[day].icon);
             let tempUnit = unit === "f" ? "°F" : "°C";
             card.innerHTML = `
@@ -237,18 +238,20 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to update humidity status
     function updateHumidityStatus(humidity) {
         if (humidity < 30) {
-            humidityStatus.innerText = "Low";
+            humidityStatus.innerText = "Dry";
         } else if (humidity <= 60) {
-            humidityStatus.innerText = "Moderate";
+            humidityStatus.innerText = "Comfortable";
         } else {
-            humidityStatus.innerText = "High";
+            humidityStatus.innerText = "Humid";
         }
     }
 
     // Function to update visibility status
     function updateVisibilityStatus(visibility) {
         if (visibility > 10) {
-            visibilityStatus.innerText = "Good";
+            visibilityStatus.innerText = "Clear";
+        } else if (visibility > 5) {
+            visibilityStatus.innerText = "Moderate";
         } else {
             visibilityStatus.innerText = "Poor";
         }
@@ -256,49 +259,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to update air quality status
     function updateAirQualityStatus(airQuality) {
-        if (airQuality < 50) {
+        if (airQuality === "N") {
             airQualityStatus.innerText = "Good";
-        } else if (airQuality <= 100) {
+        } else if (airQuality === "S") {
             airQualityStatus.innerText = "Moderate";
-        } else if (airQuality <= 150) {
-            airQualityStatus.innerText = "Unhealthy for Sensitive Groups";
-        } else if (airQuality <= 200) {
+        } else if (airQuality === "H") {
             airQualityStatus.innerText = "Unhealthy";
-        } else if (airQuality <= 300) {
-            airQualityStatus.innerText = "Very Unhealthy";
         } else {
-            airQualityStatus.innerText = "Hazardous";
+            airQualityStatus.innerText = "Very Unhealthy";
         }
     }
 
-    // Function to convert Celsius to Fahrenheit
-    function celciusToFahrenheit(celsius) {
-        return (celsius * 9/5) + 32;
+    // Fahrenheit to Celsius conversion
+    function fahrenheitToCelsius(fahrenheit) {
+        return ((fahrenheit - 32) * 5) / 9;
     }
 
-    // Event listener for Celsius button
-    celciusBtn.addEventListener("click", function () {
+    // Event listeners for temperature unit buttons
+    celciusBtn.addEventListener("click", () => {
         currentUnit = "c";
-        tempUnit.forEach((el) => el.innerText = "°C");
+        celciusBtn.classList.add("active");
+        fahrenheitBtn.classList.remove("active");
         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 
-    // Event listener for Fahrenheit button
-    fahrenheitBtn.addEventListener("click", function () {
+    fahrenheitBtn.addEventListener("click", () => {
         currentUnit = "f";
-        tempUnit.forEach((el) => el.innerText = "°F");
+        fahrenheitBtn.classList.add("active");
+        celciusBtn.classList.remove("active");
         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 
-    // Event listener for Hourly button
-    hourlyBtn.addEventListener("click", function () {
+    // Event listeners for hourly or weekly forecast buttons
+    hourlyBtn.addEventListener("click", () => {
         hourlyOrWeek = "hourly";
+        hourlyBtn.classList.add("active");
+        weekBtn.classList.remove("active");
         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 
-    // Event listener for Week button
-    weekBtn.addEventListener("click", function () {
+    weekBtn.addEventListener("click", () => {
         hourlyOrWeek = "week";
+        weekBtn.classList.add("active");
+        hourlyBtn.classList.remove("active");
         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 });

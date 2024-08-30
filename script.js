@@ -30,12 +30,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let hourlyOrWeek = "week";
 
     // Function to get date and time
-    function getDateTime() {
-        let now = new Date(),
-            hour = now.getHours(),
-            minute = now.getMinutes();
+    function getDateTime(timeZone) {
+        const now = new Date().toLocaleString("en-US", { timeZone: timeZone });
+        const localDateTime = new Date(now);
+        const hour = localDateTime.getHours();
+        const minute = localDateTime.getMinutes();
 
-        let days = [
+        const days = [
             "Sunday",
             "Monday",
             "Tuesday",
@@ -44,19 +45,22 @@ document.addEventListener("DOMContentLoaded", function () {
             "Friday",
             "Saturday",
         ];
-        hour = hour % 12 || 12;
-        if (minute < 10) {
-            minute = "0" + minute;
-        }
-        let dayString = days[now.getDay()];
-        return `${dayString}, ${hour}:${minute}`;
+
+        const dayString = days[localDateTime.getDay()];
+        const hour12 = hour % 12 || 12;
+        const minuteFormatted = minute < 10 ? "0" + minute : minute;
+        const ampm = hour >= 12 ? "PM" : "AM";
+        
+        return `${dayString}, ${hour12}:${minuteFormatted} ${ampm}`;
     }
 
     // Updating date and time
-    date.innerText = getDateTime();
-    setInterval(() => {
-        date.innerText = getDateTime();
-    }, 1000);
+    function updateDateTime(timeZone) {
+        date.innerText = getDateTime(timeZone);
+        setInterval(() => {
+            date.innerText = getDateTime(timeZone);
+        }, 1000);
+    }
 
     // Function to get public IP with fetch
     function getPublicIp() {
@@ -111,6 +115,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 sunRise.innerText = convertTimeTo12HourFormat(today.sunrise);
                 sunSet.innerText = convertTimeTo12HourFormat(today.sunset);
+
+                // Update the date and time according to the city's time zone
+                updateDateTime(data.timeZone);
             })
             .catch((err) => {
                 alert("City not found in our database");
@@ -231,93 +238,83 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Function to get humidity status
-    function updateHumidityStatus(humidity) {
-        if (humidity <= 30) {
+    // Function to update humidity status
+    function updateHumidityStatus(humidityValue) {
+        if (humidityValue <= 30) {
             humidityStatus.innerText = "Low";
-        } else if (humidity <= 60) {
+        } else if (humidityValue <= 60) {
             humidityStatus.innerText = "Moderate";
         } else {
             humidityStatus.innerText = "High";
         }
     }
 
-    // Function to get visibility status
-    function updateVisibilityStatus(visibility) {
-        if (visibility <= 0.3) {
-            visibilityStatus.innerText = "Dense Fog";
-        } else if (visibility <= 1) {
-            visibilityStatus.innerText = "Fog";
-        } else if (visibility <= 2) {
-            visibilityStatus.innerText = "Moderate Fog";
-        } else if (visibility <= 4) {
-            visibilityStatus.innerText = "Light Fog";
-        } else if (visibility <= 10) {
-            visibilityStatus.innerText = "Clear Air";
+    // Function to update visibility status
+    function updateVisibilityStatus(visibilityValue) {
+        if (visibilityValue <= 2) {
+            visibilityStatus.innerText = "Poor";
+        } else if (visibilityValue <= 5) {
+            visibilityStatus.innerText = "Moderate";
         } else {
-            visibilityStatus.innerText = "Very Clear Air";
+            visibilityStatus.innerText = "Good";
         }
     }
 
-    // Function to get air quality status
-    function updateAirQualityStatus(airQuality) {
-        if (airQuality <= 50) {
+    // Function to update air quality status
+    function updateAirQualityStatus(airQualityValue) {
+        if (airQualityValue <= 50) {
             airQualityStatus.innerText = "Good";
-        } else if (airQuality <= 100) {
+        } else if (airQualityValue <= 100) {
             airQualityStatus.innerText = "Moderate";
-        } else if (airQuality <= 150) {
+        } else if (airQualityValue <= 150) {
             airQualityStatus.innerText = "Unhealthy for Sensitive Groups";
-        } else if (airQuality <= 200) {
+        } else if (airQualityValue <= 200) {
             airQualityStatus.innerText = "Unhealthy";
-        } else if (airQuality <= 300) {
-            airQualityStatus.innerText = "Very Unhealthy";
         } else {
-            airQualityStatus.innerText = "Hazardous";
+            airQualityStatus.innerText = "Very Unhealthy";
         }
     }
 
     // Convert Fahrenheit to Celsius
     function fahrenheitToCelsius(f) {
-        return ((f - 32) * 5) / 9;
+        return (f - 32) * 5 / 9;
     }
 
-    // Event Listener for Search Form
-    searchForm.addEventListener("submit", (e) => {
+    // Event listeners for temperature unit buttons
+    celciusBtn.addEventListener("click", function () {
+        currentUnit = "c";
+        celciusBtn.classList.add("active");
+        fahrenheitBtn.classList.remove("active");
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
+
+    fahrenheitBtn.addEventListener("click", function () {
+        currentUnit = "f";
+        fahrenheitBtn.classList.add("active");
+        celciusBtn.classList.remove("active");
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
+
+    // Event listeners for hourly and weekly buttons
+    hourlyBtn.addEventListener("click", function () {
+        hourlyOrWeek = "hourly";
+        hourlyBtn.classList.add("active");
+        weekBtn.classList.remove("active");
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
+
+    weekBtn.addEventListener("click", function () {
+        hourlyOrWeek = "week";
+        weekBtn.classList.add("active");
+        hourlyBtn.classList.remove("active");
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
+
+    // Event listener for search form
+    searchForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        let city = search.value;
-        if (city) {
-            currentCity = city;
-            getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-        }
-    });
-
-    // Event Listener for Unit Buttons
-    celciusBtn.addEventListener("click", () => {
-        if (currentUnit !== "c") {
-            currentUnit = "c";
-            getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-        }
-    });
-
-    fahrenheitBtn.addEventListener("click", () => {
-        if (currentUnit !== "f") {
-            currentUnit = "f";
-            getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-        }
-    });
-
-    // Event Listeners for Hourly and Weekly Forecast
-    hourlyBtn.addEventListener("click", () => {
-        if (hourlyOrWeek !== "hourly") {
-            hourlyOrWeek = "hourly";
-            getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-        }
-    });
-
-    weekBtn.addEventListener("click", () => {
-        if (hourlyOrWeek !== "week") {
-            hourlyOrWeek = "week";
-            getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-        }
+        const city = search.value;
+        currentCity = city;
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 });

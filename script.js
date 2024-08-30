@@ -16,7 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
         airQuality = document.querySelector(".air-quality"),
         airQualityStatus = document.querySelector(".air-quality-status"),
         visibilityStatus = document.querySelector(".visibility-status"),
-        weatherCards = document.querySelector("#weather-cards");
+        weatherCards = document.querySelector("#weather-cards"),
+        celciusBtn = document.querySelector(".celcius"), 
+        fahrenheitBtn = document.querySelector(".fahrenheit"), 
+        hourlyBtn = document.querySelector(".hourly"), 
+        weekBtn = document.querySelector(".week"),
+        tempUnit = document.querySelectorAll(".temo-unit");
         
 
     let currentCity = "";
@@ -122,17 +127,17 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateVisibilityStatus(visibility) {
         if (visibility <= 0.3) {
             visibilityStatus.innerText = "Dense Fog";
-        } else if (visibility <= 1.6) { // Fixed the value from 0.16 to 1.6
+        } else if (visibility <= 1.6) {
             visibilityStatus.innerText = "Moderate Fog";
-        } else if (visibility <= 3.5) { // Fixed the value from 0.35 to 3.5
+        } else if (visibility <= 3.5) {
             visibilityStatus.innerText = "Light Fog"; 
-        } else if (visibility <= 11.3) { // Fixed the value from 1.13 to 11.3
+        } else if (visibility <= 11.3) {
             visibilityStatus.innerText = "Very Light Fog";
-        } else if (visibility <= 21.6) { // Fixed the value from 2.16 to 21.6
+        } else if (visibility <= 21.6) {
             visibilityStatus.innerText = "Light Mist";
-        } else if (visibility <= 54) { // Fixed the value from 5.4 to 54
+        } else if (visibility <= 54) {
             visibilityStatus.innerText = "Very Light Mist";
-        } else if (visibility <= 108) { // Fixed the value from 10.8 to 108
+        } else if (visibility <= 108) {
             visibilityStatus.innerText = "Clear Air";
         } else {
             visibilityStatus.innerText = "Very Clear Air";
@@ -159,10 +164,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to convert time to 12-hour format
     function convertTimeTo12HourFormat(time) {
         let [hour, minute] = time.split(":");
-        let ampm = hour >= 12 ? "PM" : "AM"; // Fixed the case for AM/PM
-        hour = hour % 12 || 12; // Convert hour to 12-hour format; 0 hour becomes 12
-        let strTime = hour + ":" + minute + " " + ampm;
-        return strTime;
+        let ampm = hour >= 12 ? "PM" : "AM";
+        hour = hour % 12 || 12;
+        return `${hour}:${minute} ${ampm}`;
     }
 
     // Function to get icon URL based on weather condition
@@ -224,53 +228,36 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="card">
                     <h2 class="day-name">${dayName}</h2>
                     <div class="card-icon">
-                        <img src="${iconSrc}" alt="weather icon"/>
+                        <img src="${iconSrc}" alt="${data[day].icon}">
                     </div>
-                    <div class="day-temp">
-                        <h2 class="temp">${dayTemp}${tempUnit}</h2>
-                    </div>
+                    <p class="card-temp">${dayTemp} ${tempUnit}</p>
+                    <p class="card-conditions">${data[day].conditions}</p>
                 </div>
             `;
+
             weatherCards.appendChild(card);
+
             day++;
         }
     }
 
-    // document.querySelectorAll(".celcius").forEach((elem) => {
-    //     elem.addEventListener("click", function () {
-    //         changeUnit("c");
-    //     });
-    // });
+    celciusBtn.addEventListener("click", () => {
+        currentUnit = "c";
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
 
-    // document.querySelectorAll(".fahrenheit").forEach((elem) => {
-    //     elem.addEventListener("click", function () {
-    //         changeUnit("f");
-    //     });
-    // });
+    fahrenheitBtn.addEventListener("click", () => {
+        currentUnit = "f";
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
 
-    // function changeUnit(unit) {
-    //     if (currentUnit !== unit) {
-    //         currentUnit = unit;
-    //         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-    //     }
-    // }
+    hourlyBtn.addEventListener("click", () => {
+        hourlyOrWeek = "hourly";
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
 
-    // document.querySelectorAll(".hourly").forEach((elem) => {
-    //     elem.addEventListener("click", function () {
-    //         changeTimeSpan("hourly");
-    //     });
-    // });
-
-    // document.querySelectorAll(".weekly").forEach((elem) => {
-    //     elem.addEventListener("click", function () {
-    //         changeTimeSpan("week");
-    //     });
-    // });
-
-    // function changeTimeSpan(span) {
-    //     if (hourlyOrWeek !== span) {
-    //         hourlyOrWeek = span;
-    //         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-    //     }
-    // }
+    weekBtn.addEventListener("click", () => {
+        hourlyOrWeek = "week";
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+    });
 });

@@ -11,13 +11,12 @@
     <div class="wrapper">
         <div class="sidebar">
             <div class="search">
-                <form action="" id="search">
                     <input type="text" id="query" placeholder="search...">
-                    <button><img src="./Images/search-symbol.png" alt="search"/></button>
-                </form>
-            </div>
-            <div class="Weather-icon">
-                <img src="./Images/weather-icon.png" alt="weather icon" id="icon"/>
+                    <button><img src="./Images/search-symbol.png" alt="Search"/></button>
+            </div>            
+            
+            <div class="weather-icon">
+                <img src="./Images/weather-icon.png" alt="Weather icon" id="icon"/>
             </div>
             <div class="temperature">
                 <h1 id="temp">0</h1>
@@ -29,38 +28,37 @@
             <div class="divider"></div>
             <div class="condition-rain">
                 <div class="condition">
-                    <img src="./Images/black-cloud.png" alt="cloud icon" id="cloud-icon"/>
-                    <div id="condition">condition</div>
+                    <img src="./Images/black-cloud.png" alt="Cloud icon" id="cloud-icon"/>
+                    <div id="condition">Condition</div>
                 </div>
                 <div class="rain">
-                    <img src="./Images/rain-drop.png" alt="rain drop" id="rain-drop"/>
-                    <div id="rain-perc">rain perc</div>
+                    <img src="./Images/rain-drop.png" alt="Rain drop" id="rain-drop"/>
+                    <div id="rain-perc">Rain Percentage</div>
                 </div>
             </div>
             <div class="location">
                 <div class="location-icon">
-                    <img src="./Images/location-icon.png" alt="location icon" id="location-icon"/>
+                    <img src="./Images/location-icon.png" alt="Location icon" id="location-icon"/>
                 </div>
                 <div class="location-text">
-                    <p class="location">location</p>
+                    <p class="location">Location</p>
                 </div>
             </div>
         </div>
         <div class="main">
             <nav>
                 <ul class="options">
-                    <button class="hourly">today</button>
-                    <button class="week active">week</button>
+                    <button class="hourly">Today</button>
+                    <button class="week active">Week</button>
                 </ul>
                 <ul class="options units">
                     <button class="celcius active">&deg;C</button>
                     <button class="fahrenheit">&deg;F</button>
                 </ul>
             </nav>
-            <div class="cards" id="weather-cards">
-            </div> 
+            <div class="cards" id="weather-cards"></div> 
             <div class="highlights">
-                <h2 class="heading">today's highlights</h2>
+                <h2 class="heading">Today's Highlights</h2>
                 <div class="cards">
                     <div class="card2">
                         <h4 class="card-heading">UV Index</h4>
@@ -80,7 +78,7 @@
                         <h4 class="card-heading">Sunrise & Sunset</h4>
                         <div class="content">
                             <p class="sun-rise">0</p>
-                            <p class="sun-set">Low</p>
+                            <p class="sun-set">0</p>
                         </div>
                     </div>
                     <div class="card2">
@@ -111,3 +109,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+         

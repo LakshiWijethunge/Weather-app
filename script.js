@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const temp = document.getElementById("temp"),
+    const temp = document.getElementById("temp")
         date = document.getElementById("date-time"),
         currentLocation = document.querySelector(".location-text"),
         condition = document.getElementById("condition"),

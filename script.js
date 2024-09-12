@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
         hourlyBtn = document.querySelector(".hourly"),
         weekBtn = document.querySelector(".week"),
         tempUnit = document.querySelectorAll(".temp-unit"),
-        searchForm = document.querySelector("#search"), 
+        searchForm = document.querySelector("#search"),
         search = document.querySelector("#query");
 
     let currentCity = "";
@@ -106,10 +106,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateHumidityStatus(today.humidity);
                 visibility.innerText = today.visibility;
                 updateVisibilityStatus(today.visibility);
-                airQuality.innerText = today.winddir;
-                updateAirQualityStatus(today.winddir);
+                airQuality.innerText = today.airQuality;
+                updateAirQualityStatus(today.airQuality);
                 if (hourlyOrWeek === "hourly") {
-                    updateForecast(data.days[0].hours, unit, "day");
+                    updateForecast(data.hours, unit, "day");
                 } else {
                     updateForecast(data.days, unit, "week");
                 }
@@ -238,39 +238,29 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Function to update humidity status
+    // Function to update Humidity status
     function updateHumidityStatus(humidity) {
         if (humidity <= 30) {
-            humidityStatus.innerText = "Low";
+            humidityStatus.innerText = "Dry";
         } else if (humidity <= 60) {
-            humidityStatus.innerText = "Moderate";
+            humidityStatus.innerText = "Comfortable";
         } else {
-            humidityStatus.innerText = "High";
+            humidityStatus.innerText = "Humid";
         }
     }
 
-    // Function to update visibility status
+    // Function to update Visibility status
     function updateVisibilityStatus(visibility) {
-        if (visibility <= 0.03) {
-            visibilityStatus.innerText = "Dense Fog";
-        } else if (visibility <= 0.16) {
-            visibilityStatus.innerText = "Moderate Fog";
-        } else if (visibility <= 0.35) {
-            visibilityStatus.innerText = "Light Fog";
-        } else if (visibility <= 1.13) {
-            visibilityStatus.innerText = "Very Light Fog";
-        } else if (visibility <= 2.16) {
-            visibilityStatus.innerText = "Light Mist";
-        } else if (visibility <= 5.4) {
-            visibilityStatus.innerText = "Very Light Mist";
-        } else if (visibility <= 10.8) {
-            visibilityStatus.innerText = "Clear Air";
+        if (visibility <= 1) {
+            visibilityStatus.innerText = "Foggy";
+        } else if (visibility <= 5) {
+            visibilityStatus.innerText = "Hazy";
         } else {
-            visibilityStatus.innerText = "Very Clear Air";
+            visibilityStatus.innerText = "Clear";
         }
     }
 
-    // Function to update air quality status
+    // Function to update Air Quality status
     function updateAirQualityStatus(airQuality) {
         if (airQuality <= 50) {
             airQualityStatus.innerText = "Good";
@@ -287,58 +277,46 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Fahrenheit to Celsius Conversion
-    function fahrenheitToCelsius(f) {
-        return ((f - 32) * 5) / 9;
+    // Function to convert Fahrenheit to Celsius
+    function fahrenheitToCelsius(temp) {
+        return (temp - 32) * (5 / 9);
     }
 
-    // Celsius to Fahrenheit Conversion
-    function celsiusToFahrenheit(c) {
-        return (c * 9) / 5 + 32;
-    }
+    // Handling Search form submission
+    searchForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        currentCity = search.value;
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
+        search.value = "";
+    });
 
-    // Search form submission
-    searchForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        let location = search.value;
-        currentCity = location;
+    // Temperature unit switch buttons
+    celciusBtn.addEventListener("click", function () {
+        celciusBtn.classList.add("active");
+        fahrenheitBtn.classList.remove("active");
+        currentUnit = "c";
         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 
-    // Event listeners for unit conversion buttons
-    celciusBtn.addEventListener("click", function () {
-        if (currentUnit !== "c") {
-            currentUnit = "c";
-            tempUnit.forEach((elem) => (elem.innerText = "°C"));
-            getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-        }
-    });
-
     fahrenheitBtn.addEventListener("click", function () {
-        if (currentUnit !== "f") {
-            currentUnit = "f";
-            tempUnit.forEach((elem) => (elem.innerText = "°F"));
-            getWeatherData(currentCity, currentUnit, hourlyOrWeek);
-        }
+        fahrenheitBtn.classList.add("active");
+        celciusBtn.classList.remove("active");
+        currentUnit = "f";
+        getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 
-    // Event listeners for hourly and weekly forecast buttons
+    // Hourly and weekly forecast buttons
     hourlyBtn.addEventListener("click", function () {
-        changeActiveButton(hourlyBtn);
+        hourlyBtn.classList.add("active");
+        weekBtn.classList.remove("active");
         hourlyOrWeek = "hourly";
         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
 
     weekBtn.addEventListener("click", function () {
-        changeActiveButton(weekBtn);
+        weekBtn.classList.add("active");
+        hourlyBtn.classList.remove("active");
         hourlyOrWeek = "week";
         getWeatherData(currentCity, currentUnit, hourlyOrWeek);
     });
-
-    // Change active button style
-    function changeActiveButton(activeBtn) {
-        hourlyBtn.classList.remove("active");
-        weekBtn.classList.remove("active");
-        activeBtn.classList.add("active");
-    }
 });
